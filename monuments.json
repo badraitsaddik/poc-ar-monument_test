@@ -16,7 +16,7 @@
     "description": "Cathédrale gothique du XIIe siècle sur l'Île de la Cité.",
     "lat": 33.5333312,
     "lon": -7.583331,
-    "azimuth": 260.6875,
+    "azimuth": 86.6875,
     "marker": "markers/twin-center",
     "image": "images/twin-center.jpg",
     "distance_max_m": 2000
