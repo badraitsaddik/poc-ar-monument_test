@@ -86,15 +86,11 @@ function initCompass(onHeadingUpdate) {
     if (event.webkitCompassHeading !== undefined && event.webkitCompassHeading !== null) {
       rawHeading = event.webkitCompassHeading;
     } else if (event.alpha !== null) {
-      rawHeading = (360 - event.alpha + 360) % 360;
+      rawHeading = _headingFromOrientation(event.alpha, event.beta ?? 0, event.gamma ?? 0);
     } else { return; }
 
     const beta  = event.beta  ?? 0;
     const gamma = event.gamma ?? 0;
-
-    if (Math.abs(beta) > CONFIG.TILT_THRESHOLD) {
-      rawHeading = _tiltCompensatedHeading(rawHeading, beta, gamma);
-    }
 
     if (_smoothedHeading === null) {
       _smoothedHeading = rawHeading;
@@ -121,13 +117,34 @@ function stopCompass() {
   }
 }
 
-// ── 5. Correction tilt ───────────────────────────────────────────────────────
-function _tiltCompensatedHeading(alpha, beta, gamma) {
+// ── 5. Cap calculé depuis l'orientation de l'appareil ─────────────────────────
+function _headingFromOrientation(alpha, beta, gamma) {
   const toRad = (d) => d * Math.PI / 180;
-  const a = toRad(alpha), b = toRad(beta), g = toRad(gamma);
-  const xNorth = Math.sin(a) * Math.sin(b) * Math.sin(g) + Math.cos(a) * Math.cos(g);
-  const yNorth = Math.sin(a) * Math.cos(b);
-  return (Math.atan2(-xNorth, yNorth) * 180 / Math.PI + 360) % 360;
+  const a = toRad(alpha);
+  const b = toRad(beta);
+  const g = toRad(gamma);
+
+  const cA = Math.cos(a), sA = Math.sin(a);
+  const cB = Math.cos(b), sB = Math.sin(b);
+  const cG = Math.cos(g), sG = Math.sin(g);
+
+  const x = -cA * sG - sA * sB * cG;
+  const y = -sA * sG + cA * sB * cG;
+
+  let heading = (Math.atan2(x, y) * 180 / Math.PI + 360) % 360;
+  const orientationAngle = _getScreenOrientationAngle();
+  heading = (heading + orientationAngle + 360) % 360;
+  return heading;
+}
+
+function _getScreenOrientationAngle() {
+  if (screen.orientation && typeof screen.orientation.angle === 'number') {
+    return screen.orientation.angle;
+  }
+  if (typeof window.orientation === 'number') {
+    return window.orientation;
+  }
+  return 0;
 }
 
 // ── 6. Bearing Haversine ─────────────────────────────────────────────────────
