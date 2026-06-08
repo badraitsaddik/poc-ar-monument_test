@@ -1,0 +1,367 @@
+/* ─────────────────────────────────────────────
+   Reset & Base
+───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0d0d1a;
+  color: #fff;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─────────────────────────────────────────────
+   Écran de démarrage
+───────────────────────────────────────────── */
+#start-screen {
+  position: absolute; inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #0d0d1a 0%, #1a1a3e 100%);
+  z-index: 1000;
+  gap: 24px;
+  padding: 32px;
+  text-align: center;
+}
+
+#start-screen h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+#start-screen h1 span { color: #a78bfa; }
+
+#start-screen p {
+  font-size: 1rem;
+  color: #94a3b8;
+  max-width: 300px;
+  line-height: 1.6;
+}
+
+#start-btn {
+  margin-top: 8px;
+  padding: 16px 40px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  -webkit-appearance: none;
+}
+
+#start-btn:active { background: #6d28d9; transform: scale(0.97); }
+
+.start-badges {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.badge {
+  background: rgba(167, 139, 250, 0.15);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: #c4b5fd;
+}
+
+/* ─────────────────────────────────────────────
+   Conteneur AR (A-Frame)
+───────────────────────────────────────────── */
+#ar-container {
+  position: absolute; inset: 0;
+  display: none;
+  background: transparent;
+}
+
+a-scene {
+  position: absolute; inset: 0;
+  z-index: 2;
+}
+
+/* AR.js injecte une balise video; on la maintient visible au-dessus du fond page. */
+#ar-container video,
+#ar-container .arjs-video {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 1 !important;
+  background: transparent !important;
+}
+
+#ar-container canvas,
+#ar-container .a-canvas,
+#ar-container .arjs-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  background: transparent !important;
+}
+
+/* ─────────────────────────────────────────────
+   Loader
+───────────────────────────────────────────── */
+#loader {
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+  gap: 20px;
+}
+
+.loader-spinner {
+  width: 48px; height: 48px;
+  border: 4px solid rgba(167, 139, 250, 0.2);
+  border-top-color: #a78bfa;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#loader-text {
+  font-size: 0.95rem;
+  color: #94a3b8;
+}
+
+/* ─────────────────────────────────────────────
+   HUD — en haut
+───────────────────────────────────────────── */
+#hud-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 14px 16px 10px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Boussole */
+#compass-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+#compass-ring {
+  width: 60px; height: 60px;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#compass-needle {
+  width: 4px; height: 26px;
+  background: linear-gradient(to top, #ef4444 50%, #fff 50%);
+  border-radius: 2px;
+  transform-origin: center bottom;
+  transition: transform 0.15s ease-out;
+  position: relative;
+  bottom: -4px;
+}
+
+.compass-label-n {
+  position: absolute;
+  top: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #ef4444;
+  letter-spacing: 0;
+}
+
+#compass-deg {
+  font-size: 11px;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Statuts droite */
+#hud-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+#phone-status, #gps-accuracy, #target-azimuth {
+  font-size: 11px;
+  background: rgba(0,0,0,0.45);
+  padding: 3px 8px;
+  border-radius: 12px;
+  color: #94a3b8;
+}
+
+#gps-accuracy { color: #4ade80; }
+
+/* ─────────────────────────────────────────────
+   Panneau directionnel — en bas
+───────────────────────────────────────────── */
+#direction-panel {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+  padding: 16px 16px 28px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+#direction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow: hidden;
+}
+
+.monument-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 8px 12px;
+  transition: background 0.2s;
+}
+
+.monument-item.in-axis {
+  background: rgba(124, 58, 237, 0.25);
+  border-color: rgba(167, 139, 250, 0.5);
+}
+
+.arrow-icon {
+  font-size: 1rem;
+  min-width: 20px;
+  text-align: center;
+  color: #a78bfa;
+}
+
+.in-axis .arrow-icon { color: #c4b5fd; }
+
+.monument-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.monument-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.monument-dist {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.in-axis .monument-dist { color: #a78bfa; }
+
+.no-monuments {
+  font-size: 0.85rem;
+  color: #475569;
+  text-align: center;
+  padding: 12px;
+}
+
+/* ─────────────────────────────────────────────
+   Panneau monument détecté
+───────────────────────────────────────────── */
+#detected-panel {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: rgba(13, 13, 30, 0.95);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  border-radius: 20px;
+  padding: 24px;
+  width: min(340px, 90vw);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  text-align: center;
+}
+
+#detected-panel.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+#detected-panel h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #c4b5fd;
+}
+
+#detected-desc {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+#detected-close {
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 28px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+#detected-close:active { background: #6d28d9; }
+
+/* ─────────────────────────────────────────────
+   Toast d'erreur
+───────────────────────────────────────────── */
+#error-toast {
+  position: absolute;
+  top: 90px; left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: rgba(220, 38, 38, 0.9);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  z-index: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  white-space: nowrap;
+  max-width: 90vw;
+  white-space: normal;
+  text-align: center;
+}
+
+#error-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

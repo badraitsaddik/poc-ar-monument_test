@@ -1,27 +1,110 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-    </head>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Monument AR</title>
+  <link rel="stylesheet" href="css/style.css" />
 
-    <body style="margin: 0; overflow: hidden;">
-        <a-scene
-            embedded
-            loading-screen="enabled: false;"
-            arjs="sourceType: webcam; debugUIEnabled: false;"
-        >
-                <a-image
-                    src="assets/asset.png"
-                    look-at="[gps-camera]"
-                    scale="1 1 1"
-                    gps-entity-place="latitude: 33.70456832476546; longitude: -7.365259276377008;"
-                ></a-image>
+  <!-- A-Frame 1.6 -->
+  <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
+  <!-- AR.js avec NFT + Location Based -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+</head>
 
-            <a-camera gps-camera rotation-reader></a-camera>
-        </a-scene>
-    </body>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       ÉCRAN DE DÉMARRAGE
+  ════════════════════════════════════════════ -->
+  <div id="start-screen">
+    <h1>Monument <span>AR</span></h1>
+    <p>Identifiez les monuments autour de vous grâce à la boussole et à la caméra.</p>
+
+    <div class="start-badges">
+      <span class="badge">🧭 Boussole</span>
+      <span class="badge">🎯 Azimut</span>
+      <span class="badge">📷 NFT Tracking</span>
+    </div>
+
+    <button id="start-btn">Démarrer</button>
+    <p style="font-size:0.75rem;color:#475569;max-width:280px">
+      L'application demandera l'accès à votre caméra et à votre boussole.
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       CONTENEUR AR
+  ════════════════════════════════════════════ -->
+  <div id="ar-container">
+
+    <!-- ── Scène A-Frame ────────────────────────
+         arjs="trackingMethod: best" utilise NFT
+         Les entités <a-nft> sont injectées dynamiquement
+         par nft-manager.js selon les candidats
+    ──────────────────────────────────────────── -->
+    <a-scene
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true"
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+    >
+      <!-- Caméra AR (pas gps-camera : on gère le GPS nous-mêmes) -->
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <!-- ── HUD en haut ──────────────────────── -->
+    <div id="hud-top">
+      <!-- Boussole visuelle -->
+      <div id="compass-widget">
+        <div id="compass-ring">
+          <span class="compass-label-n">N</span>
+          <div id="compass-needle"></div>
+        </div>
+        <span id="compass-deg">--°</span>
+      </div>
+
+      <!-- Statuts -->
+      <div id="hud-status">
+        <span id="phone-status">🧭 Guidage boussole</span>
+        <span id="target-azimuth">Azimut cible --</span>
+        <span id="gps-accuracy">GPS…</span>
+      </div>
+    </div>
+
+    <!-- ── Panneau directionnel en bas ─────── -->
+    <div id="direction-panel">
+      <div id="direction-list">
+        <!-- Rempli dynamiquement par ui.js -->
+      </div>
+    </div>
+
+    <!-- ── Panneau monument détecté ─────────── -->
+    <div id="detected-panel">
+      <h2 id="detected-name"></h2>
+      <p id="detected-desc"></p>
+      <button id="detected-close">Fermer</button>
+    </div>
+
+    <!-- ── Loader ────────────────────────────── -->
+    <div id="loader">
+      <div class="loader-spinner"></div>
+      <span id="loader-text">Initialisation…</span>
+    </div>
+
+    <!-- ── Toast d'erreur ────────────────────── -->
+    <div id="error-toast">
+      <span id="error-text"></span>
+    </div>
+
+  </div><!-- /ar-container -->
+
+  <!-- ═══════════════════════════════════════════
+       APPLICATION (module ES6)
+  ════════════════════════════════════════════ -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
 </html>
