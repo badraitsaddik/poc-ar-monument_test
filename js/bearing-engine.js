@@ -134,7 +134,7 @@ function _headingFromOrientation(alpha, beta, gamma) {
   let heading = (Math.atan2(x, y) * 180 / Math.PI + 360) % 360;
   const orientationAngle = _getScreenOrientationAngle();
   heading = (heading + orientationAngle + 360) % 360;
-  return heading;
+  return normalizeAngle(heading + 180);
 }
 
 function _getScreenOrientationAngle() {
