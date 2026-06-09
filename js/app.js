@@ -10,8 +10,6 @@ import {
   requestCompassPermission,
 } from './bearing-engine.js';
 
-import { syncNFTEntities, clearAllNFT } from './nft-manager.js';
-
 import {
   showLoader, hideLoader,
   showStartScreen, hideStartScreen,
@@ -80,7 +78,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Masquer le loader AR.js quand les descripteurs sont prêts
   window.addEventListener('arjs-nft-loaded', () => {
     hideLoader();
-    console.log('[App] Marqueurs NFT chargés');
+    console.log('[App] Module AR prêt');
   });
 });
 
@@ -103,8 +101,8 @@ async function handleStart() {
   showLoader('Initialisation boussole…');
 
   const scene = document.querySelector('a-scene');
-  let nftActive = false;
   const useGPS = false;
+  const enableNFT = false;
 
   // ── Boucle principale : mise à jour boussole ───────────────────────────────
   await startBearingEngine({
@@ -129,19 +127,9 @@ async function handleStart() {
       // 3bis. GPS désactivé pendant la démo
       updateGPSAccuracy(null);
 
-      // 4. Sync des entités NFT seulement si le téléphone est levé
-      //    et qu'il y a des candidats dans l'axe
-      if (phoneIsRaised && candidates.length > 0) {
-        if (!nftActive) {
-          showLoader('Chargement des marqueurs NFT…');
-          nftActive = true;
-        }
-        syncNFTEntities(candidates, scene);
-      } else if (!phoneIsRaised && nftActive) {
-        // Téléphone remis à plat → on vide la scène pour économiser les ressources
-        clearAllNFT(scene);
-        nftActive = false;
-        hideLoader();
+      // 4. NFT désactivé pour la démo: on garde uniquement le guidage boussole
+      if (enableNFT) {
+        // TODO: réactiver syncNFTEntities / clearAllNFT si le tracking visuel est nécessaire.
       }
     },
 
